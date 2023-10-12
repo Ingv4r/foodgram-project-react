@@ -14,11 +14,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   frontend:
-    build: ingv4r/foodgram_frontend
+    image: ingv4r/foodgram_frontend
     volumes:
       - static:/app/result_build/build/
   backend:
-    build: ingv4r/foodgram_backend
+    image: ingv4r/foodgram_backend
     restart: always
     env_file: .env
     volumes:
