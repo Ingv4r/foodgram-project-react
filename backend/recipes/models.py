@@ -19,7 +19,7 @@ class Recipe(models.Model):
         null=False,
     )
     name = models.CharField(
-        verbose_name="Название", 
+        verbose_name="Название",
         max_length=NAME_MAX_VALUE,
         db_index=True,
         null=False
