@@ -1,0 +1,8 @@
+curl \
+  -X POST \
+  -H "Content-Type: application/json" \
+  -d '{"password": "Reaper554", "email": "igor2@mail.com"}' \
+  http://127.0.0.1:8000/api/auth/token/login/
+
+
+  
