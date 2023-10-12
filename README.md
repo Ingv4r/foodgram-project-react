@@ -3,8 +3,8 @@
 ![workflow](https://github.com/Ingv4r/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
 ## Для ревью
-домен https://ingvar-foodgram.ddns.net/
-ip сервера 158.160.23.165
+домен: https://ingvar-foodgram.ddns.net/ \
+ip сервера: 158.160.23.165
 
 Суперюзер: \
 login: admin \
