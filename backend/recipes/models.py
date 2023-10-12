@@ -4,6 +4,9 @@ from django.db import models
 
 User = get_user_model()
 MINIMUM_VALUE: int = 1
+NAME_MAX_VALUE: int = 100
+TEXT_MAX_VALUE: int = 1000
+HEX_MAX_VALUE: int = 7
 
 
 class Recipe(models.Model):
@@ -16,7 +19,10 @@ class Recipe(models.Model):
         null=False,
     )
     name = models.CharField(
-        verbose_name="Название", max_length=200, db_index=True, null=False
+        verbose_name="Название", 
+        max_length=NAME_MAX_VALUE,
+        db_index=True,
+        null=False
     )
     image = models.ImageField(
         verbose_name="Изображение",
@@ -24,7 +30,7 @@ class Recipe(models.Model):
         null=False,
     )
     text = models.TextField(
-        verbose_name="Описание", null=False, max_length=1000
+        verbose_name="Описание", null=False, max_length=TEXT_MAX_VALUE
     )
     ingredients: int = models.ManyToManyField(
         to="Ingredient",
@@ -59,11 +65,11 @@ class Recipe(models.Model):
 class Tag(models.Model):
     """Tag model."""
     name: str = models.CharField(
-        verbose_name="Название", max_length=150, unique=True
+        verbose_name="Название", max_length=NAME_MAX_VALUE, unique=True
     )
     color: str = models.CharField(
         verbose_name="Цвет",
-        max_length=7,
+        max_length=HEX_MAX_VALUE,
         help_text=(
             "Цветовой код должен быть в 16-ричном формате. Например: #49B64E"
         ),
@@ -97,10 +103,13 @@ class Tag(models.Model):
 class Ingredient(models.Model):
     """Ingredient model."""
     name: str = models.CharField(
-        verbose_name="Название", max_length=100, null=False, db_index=True
+        verbose_name="Название",
+        max_length=NAME_MAX_VALUE,
+        null=False,
+        db_index=True
     )
     measurement_unit: str = models.CharField(
-        verbose_name="Еденица измерения", max_length=40, null=False
+        verbose_name="Еденица измерения", max_length=NAME_MAX_VALUE, null=False
     )
 
     class Meta:
