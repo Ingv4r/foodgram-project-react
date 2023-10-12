@@ -14,11 +14,11 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   frontend:
-    build: ../frontend/
+    build: ingv4r/foodgram_frontend
     volumes:
       - static:/app/result_build/build/
   backend:
-    build: ../backend/
+    build: ingv4r/foodgram_backend
     restart: always
     env_file: ../backend/.env
     volumes:
@@ -31,7 +31,7 @@ services:
     image: nginx:1.22.1
     restart: always
     ports:
-      - "80:80"
+      - "9001:80"
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/usr/share/nginx/html/
