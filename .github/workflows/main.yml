@@ -126,7 +126,7 @@ jobs:
 
   send_failure_message:
     if: ${{ failure() }}
-    needs: backend_tests
+    needs: [backend_tests, deploy]
     runs-on: ubuntu-latest
     steps:
     - name: Send message
