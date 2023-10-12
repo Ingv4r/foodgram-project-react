@@ -28,12 +28,11 @@ services:
       - db
       - frontend
   nginx:
-    image: nginx:1.22.1
+    build: ./infra/
     restart: always
     ports:
       - 80:80
     volumes:
-      - ./infra/nginx.conf:/etc/nginx/conf.d/default.conf
       - static:/usr/share/nginx/html/
       - backend_static:/backend_static
       - backend_media:/backend_media
