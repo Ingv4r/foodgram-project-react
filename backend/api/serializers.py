@@ -192,21 +192,22 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("author",)
 
-    def __is_auth_and_exists(self, obj, model) -> bool:
+    @staticmethod
+    def is_auth_and_exists(obj, user, model) -> bool:
         """Check if user is authorized or exists in model."""
-        if self.context["request"].user.is_anonymous:
+        if user.is_anonymous:
             return False
-        return model.objects.filter(
-            recipe=obj, user=self.context["request"].user
-        ).exists()
+        return model.objects.filter(recipe=obj, user=user).exists()
 
     def get_is_favorited(self, obj) -> bool:
         """Check for recipe in favorites."""
-        return self.__is_auth_and_exists(obj, FavouriteRecipe)
+        user = self.context["request"].user
+        return self.is_auth_and_exists(obj, user, FavouriteRecipe)
 
     def get_is_in_shopping_cart(self, obj) -> bool:
         """Chek for recipe in user's shopping cart."""
-        return self.__is_auth_and_exists(obj, ShoppingCart)
+        user = self.context["request"].user
+        return self.is_auth_and_exists(obj, user, ShoppingCart)
 
     def validate_ingredients(self, values):
         """Ingredients validation."""
@@ -304,21 +305,22 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         model: Recipe = Recipe
         exclude: tuple = ("pub_date",)
 
-    def __is_auth_and_exists(self, obj, model):
+    @staticmethod
+    def is_auth_and_exists(obj, user, model) -> bool:
         """Check if user is authorized or exists in model."""
-        if self.context["request"].user.is_anonymous:
+        if user.is_anonymous:
             return False
-        return model.objects.filter(
-            recipe=obj, user=self.context["request"].user
-        ).exists()
+        return model.objects.filter(recipe=obj, user=user).exists()
 
     def get_is_favorited(self, obj):
         """Check if recipe in favourite."""
-        return self.__is_auth_and_exists(obj, FavouriteRecipe)
+        user = self.context["request"].user
+        return self.is_auth_and_exists(obj, user, FavouriteRecipe)
 
     def get_is_in_shopping_cart(self, obj):
         """Check if recipe in shopping cart."""
-        return self.__is_auth_and_exists(obj, ShoppingCart)
+        user = self.context["request"].user
+        return self.is_auth_and_exists(obj, user, ShoppingCart)
 
 
 class IngredientSerialiser(serializers.ModelSerializer):
