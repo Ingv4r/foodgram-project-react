@@ -5,9 +5,10 @@ from django.core.files.base import ContentFile
 from django.db import transaction
 from django.shortcuts import get_object_or_404
 from djoser.serializers import UserCreateSerializer, UserSerializer
+from rest_framework import serializers
+
 from recipes.models import (FavouriteRecipe, Ingredient, Recipe,
                             RecipeIngredient, ShoppingCart, Tag)
-from rest_framework import serializers
 from users.models import Follow
 
 User = get_user_model()
@@ -63,10 +64,12 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, obj):
         """Return True if the user is subscribed to author."""
-        user = self.context["request"].user
-        if user.is_anonymous:
-            return False
-        return Follow.objects.filter(user=user, author=obj).exists()
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return Follow.objects.filter(
+                user=request.user, author=obj
+            ).exists()
+        return False
 
 
 class CustomUserCreateSerializer(UserCreateSerializer):
@@ -192,22 +195,22 @@ class RecipeWriteSerializer(serializers.ModelSerializer):
         )
         read_only_fields = ("author",)
 
-    @staticmethod
-    def is_auth_and_exists(obj, user, model) -> bool:
+    def __is_auth_and_exists(self, obj, model) -> bool:
         """Check if user is authorized or exists in model."""
-        if user.is_anonymous:
-            return False
-        return model.objects.filter(recipe=obj, user=user).exists()
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return model.objects.filter(
+                recipe=obj, user=request.user
+            ).exists()
+        return False
 
     def get_is_favorited(self, obj) -> bool:
         """Check for recipe in favorites."""
-        user = self.context["request"].user
-        return self.is_auth_and_exists(obj, user, FavouriteRecipe)
+        return self.__is_auth_and_exists(obj, FavouriteRecipe)
 
     def get_is_in_shopping_cart(self, obj) -> bool:
         """Chek for recipe in user's shopping cart."""
-        user = self.context["request"].user
-        return self.is_auth_and_exists(obj, user, ShoppingCart)
+        return self.__is_auth_and_exists(obj, ShoppingCart)
 
     def validate_ingredients(self, values):
         """Ingredients validation."""
@@ -305,22 +308,22 @@ class RecipeReadSerializer(serializers.ModelSerializer):
         model: Recipe = Recipe
         exclude: tuple = ("pub_date",)
 
-    @staticmethod
-    def is_auth_and_exists(obj, user, model) -> bool:
+    def __is_auth_and_exists(self, obj, model) -> bool:
         """Check if user is authorized or exists in model."""
-        if user.is_anonymous:
-            return False
-        return model.objects.filter(recipe=obj, user=user).exists()
+        request = self.context.get("request")
+        if request and request.user.is_authenticated:
+            return model.objects.filter(
+                recipe=obj, user=request.user
+            ).exists()
+        return False
 
     def get_is_favorited(self, obj):
         """Check if recipe in favourite."""
-        user = self.context["request"].user
-        return self.is_auth_and_exists(obj, user, FavouriteRecipe)
+        return self.__is_auth_and_exists(obj, FavouriteRecipe)
 
     def get_is_in_shopping_cart(self, obj):
         """Check if recipe in shopping cart."""
-        user = self.context["request"].user
-        return self.is_auth_and_exists(obj, user, ShoppingCart)
+        return self.__is_auth_and_exists(obj, ShoppingCart)
 
 
 class IngredientSerialiser(serializers.ModelSerializer):

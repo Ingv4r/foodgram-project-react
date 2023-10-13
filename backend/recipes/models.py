@@ -3,6 +3,7 @@ from django.core.validators import MinValueValidator, RegexValidator
 from django.db import models
 
 User = get_user_model()
+
 MINIMUM_VALUE: int = 1
 NAME_MAX_VALUE: int = 100
 TEXT_MAX_VALUE: int = 1000
@@ -22,7 +23,7 @@ class Recipe(models.Model):
         verbose_name="Название",
         max_length=NAME_MAX_VALUE,
         db_index=True,
-        null=False
+        null=False,
     )
     image = models.ImageField(
         verbose_name="Изображение",
@@ -106,7 +107,7 @@ class Ingredient(models.Model):
         verbose_name="Название",
         max_length=NAME_MAX_VALUE,
         null=False,
-        db_index=True
+        db_index=True,
     )
     measurement_unit: str = models.CharField(
         verbose_name="Еденица измерения", max_length=NAME_MAX_VALUE, null=False
@@ -166,7 +167,7 @@ class FavouriteRecipe(models.Model):
     recipe: int = models.ForeignKey(
         Recipe,
         on_delete=models.CASCADE,
-        verbose_name='Рецепт',
+        verbose_name="Рецепт",
         related_name="favourite",
     )
     date_added: models.DateTimeField = models.DateTimeField(
@@ -186,8 +187,7 @@ class FavouriteRecipe(models.Model):
     def __str__(self) -> str:
         """Return a string representation of this object."""
         return (
-            f"{self.user.username} добавил "
-            f"{self.recipe.name} в избранное."
+            f"{self.user.username} добавил " f"{self.recipe.name} в избранное."
         )
 
 

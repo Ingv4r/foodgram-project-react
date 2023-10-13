@@ -8,8 +8,6 @@ from django.http import FileResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from recipes.models import (FavouriteRecipe, Ingredient, Recipe,
-                            RecipeIngredient, ShoppingCart, Tag)
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen import canvas
@@ -17,6 +15,9 @@ from rest_framework import exceptions, status, viewsets
 from rest_framework.decorators import action
 from rest_framework.permissions import SAFE_METHODS, IsAuthenticated
 from rest_framework.response import Response
+
+from recipes.models import (FavouriteRecipe, Ingredient, Recipe,
+                            RecipeIngredient, ShoppingCart, Tag)
 from users.models import Follow
 
 from .filters import IngredientFilter, RecipeFilter
@@ -27,6 +28,7 @@ from .serializers import (IngredientSerialiser, RecipeReadSerializer,
                           SubscriptionSerializer, TagsSerializer)
 
 User = get_user_model()
+
 FILENAME = "shoppingcart.pdf"
 
 
@@ -63,8 +65,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         """Add or delete recipe from Favorites."""
         if request.method == "POST":
             return self.add_to(FavouriteRecipe, request.user, pk)
-        else:
-            return self.delete_from(FavouriteRecipe, request.user, pk)
+        return self.delete_from(FavouriteRecipe, request.user, pk)
 
     @action(
         detail=True,
@@ -87,13 +88,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pdfmetrics.registerFont(TTFont("Ost", f"{file_path}/Quicksand.ttf"))
         page.setFont("Ost", 18)
         ingredients = (
-            RecipeIngredient.objects
-            .filter(recipe__shopping_cart__user=request.user)
+            RecipeIngredient.objects.filter(
+                recipe__shopping_cart__user=request.user
+            )
             .values("ingredient__name", "ingredient__measurement_unit")
             .annotate(amount=Sum("amount"))
         )
         if ingredients:
-            today = f'{datetime.now():%Y-%m-%d}'
+            today = f"{datetime.now():%Y-%m-%d}"
             indent = 20
             page.drawString(x_position, y_position, f"Cписок покупок {today}:")
             for index, ingredient in enumerate(ingredients, start=1):
@@ -153,7 +155,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(
             {"errors": "В вашем списке такого рецепта нет."},
-            status=status.HTTP_400_BAD_REQUEST
+            status=status.HTTP_400_BAD_REQUEST,
         )
 
 
@@ -224,6 +226,5 @@ class CustomUserViewSet(UserViewSet):
     )
     def me(self, request):
         """GET http method for api/users/me."""
-        user = get_object_or_404(User, pk=request.user.id)
-        serializer = self.get_serializer(user)
+        serializer = self.get_serializer(request.user)
         return Response(serializer.data, status=status.HTTP_200_OK)

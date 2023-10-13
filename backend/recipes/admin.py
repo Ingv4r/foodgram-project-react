@@ -63,15 +63,30 @@ class IngridientAdmin(admin.ModelAdmin):
         "name",
         "measurement_unit",
     )
-    search_fields: tuple = ("name", "measurement_unit",)
-    list_filter: tuple = ("name", "measurement_unit",)
+    search_fields: tuple = (
+        "name",
+        "measurement_unit",
+    )
+    list_filter: tuple = (
+        "name",
+        "measurement_unit",
+    )
     empty_value_display: str = "пусто"
 
 
 @admin.register(ShoppingCart)
 class ShoppingCartAdmin(admin.ModelAdmin):
     """Admin interface for shopping cart."""
-    list_display: tuple = ("user", "recipe",)
-    search_fields: tuple = ("user__username", "recipe__name",)
-    list_filter: tuple = ("user__username", "recipe__name",)
+    list_display: tuple = (
+        "user",
+        "recipe",
+    )
+    search_fields: tuple = (
+        "user__username",
+        "recipe__name",
+    )
+    list_filter: tuple = (
+        "user__username",
+        "recipe__name",
+    )
     empty_value_display: str = "-пусто-"
