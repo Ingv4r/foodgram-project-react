@@ -1,4 +1,4 @@
-# Дипломный проект Foodgram
+# Проект Foodgram
 
 ![workflow](https://github.com/Ingv4r/foodgram-project-react/actions/workflows/main.yml/badge.svg)
 
